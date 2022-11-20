@@ -39,11 +39,11 @@ class _SimpleFormState extends State<SimpleForm> {
                           Text(
                             "Uploading...",
                             style: TextStyle(
-                              fontSize: 30,
+                              fontSize: 24,
                               color: Colors.white,
                             ),
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 12),
                           LinearProgressIndicator(),
                         ],
                       ),
