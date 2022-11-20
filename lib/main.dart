@@ -3,6 +3,7 @@ import 'package:learn_flutter/pages/home_page.dart';
 import 'package:learn_flutter/pages/profile_page.dart';
 
 void main() {
+
   runApp(const MyApp());
 }
 
