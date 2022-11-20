@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker_web/image_picker_web.dart';
+import 'package:learn_flutter/widgets/image_gallery.dart';
+
+import '../utilities/validators.dart';
 
 class SimpleForm extends StatefulWidget {
   const SimpleForm({super.key});
@@ -10,19 +14,8 @@ class SimpleForm extends StatefulWidget {
 
 class _SimpleFormState extends State<SimpleForm> {
   final _formKey = GlobalKey<FormState>();
-
-  String? _validateEmail(String? value) {
-    String pattern =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-        r"{0,253}[a-zA-Z0-9])?)*$";
-    RegExp regex = RegExp(pattern);
-    if (value == null || value.isEmpty || !regex.hasMatch(value)) {
-      return 'Enter a valid email address';
-    } else {
-      return null;
-    }
-  }
+  late List<Uint8List> imageFileBytes = [];
+  bool isImageSelected = false;
 
   void _submitForm() => {
         if (_formKey.currentState!.validate())
@@ -72,7 +65,7 @@ class _SimpleFormState extends State<SimpleForm> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 40),
+                  const SizedBox(width: 24),
                   Expanded(
                     child: TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -105,7 +98,7 @@ class _SimpleFormState extends State<SimpleForm> {
                 maxLines: 5,
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Flexible(
               child: TextFormField(
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -114,13 +107,36 @@ class _SimpleFormState extends State<SimpleForm> {
                   labelText: "Email",
                   helperText: " ",
                 ),
-                validator: (value) => _validateEmail(value),
+                validator: (value) => validateEmail(value),
               ),
             ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => _submitForm(),
-              child: const Text('Submit'),
+            const SizedBox(height: 16),
+            ImageGallery(imageFileBytes: imageFileBytes),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                TextButton.icon(
+                  onPressed: () async {
+                    final image = await ImagePickerWeb.getImageAsBytes();
+
+                    setState(() {
+                      if (image != null) {
+                        imageFileBytes.add(image);
+                      }
+                      if (imageFileBytes.isNotEmpty) {
+                        isImageSelected = true;
+                      }
+                    });
+                  },
+                  icon: const Icon(Icons.add, size: 24),
+                  label: const Text("Add Images"),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: () => _submitForm(),
+                  child: const Text('Submit'),
+                ),
+              ],
             ),
           ]),
         ),
